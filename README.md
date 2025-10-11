@@ -66,21 +66,21 @@ Do you want me to do that?
 
 20:00
 ## 🕒 **PHASE 3 — Vehicles & Movement (4h)**
-* [ ] Implement `Car` class:
+* [X] Implement `Car` class:
 
-  * [ ] Properties: position, direction, route, color, speed.
-  * [ ] Method `update()` for movement.
-* [ ] Handle **key input** (`KeyEvent`):
+  * [X] Properties: position, direction, route, color, speed.
+  * [X] Method `update()` for movement.
+* [X] Handle **key input** (`KeyEvent`):
 
-  * [ ] ↑ → car from South → North.
-  * [ ] ↓ → car from North → South.
-  * [ ] → → car from West → East.
-  * [ ] ← → car from East → West.
-  * [ ] `r` → random direction.
-* [ ] Add random route (LEFT / RIGHT / STRAIGHT).
-* [ ] Add cars to simulation list and update in loop.
+  * [X] ↑ → car from South → North.
+  * [X] ↓ → car from North → South.
+  * [X] → → car from West → East.
+  * [X] ← → car from East → West.
+  * [X] `r` → random direction.
+* [X] Add random route (LEFT / RIGHT / STRAIGHT).
+* [X] Add cars to simulation list and update in loop.
 * [ ] Implement **safe distance** (cars stop before next car).
-* [ ] Remove cars exiting the screen.
+* [X] Remove cars exiting the screen.
 
 ✅ **Goal:** Cars spawn, move correctly, and respect spacing.
 

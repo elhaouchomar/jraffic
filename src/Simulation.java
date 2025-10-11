@@ -57,8 +57,6 @@ public class Simulation {
 
         double x = 0, y = 0;
         String moveDir = "";
-        int shift = 52;
-        int center = 26;
         switch (arrowKey) {
             case "UP":
                 x = 406;

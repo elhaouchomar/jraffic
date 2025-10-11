@@ -49,6 +49,18 @@ public class Car {
         shape.setY(y);
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
     // Check if car is off-screen
     public boolean isOffScreen(double windowSize) {
         return x < -50 || x > windowSize + 50 || y < -50 || y > windowSize + 50;
