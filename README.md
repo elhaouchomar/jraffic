@@ -34,10 +34,10 @@ resources : https://www.geeksforgeeks.org/java/javafx-tutorial/
 18:00
 ## 🕑 **PHASE 2 — Draw Environment (2h)**
 
-* [ ] Draw horizontal and vertical roads (`Rectangle`).
-* [ ] Draw the intersection center.
-* [ ] Add traffic light placeholders (colored rectangles or circles).
-* [ ] Position lights at all entry lanes (N, S, E, W).
+* [X] Draw horizontal and vertical roads (`Rectangle`).
+* [X] Draw the intersection center.
+* [X] Add traffic light placeholders (colored rectangles or circles).
+* [X] Position lights at all entry lanes (N, S, E, W).
 
 ✅ **Goal:** Crossroad drawn with visible traffic lights.
 ---
