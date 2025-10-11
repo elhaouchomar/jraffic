@@ -7,6 +7,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 // The Simulation class in your JavaFX application serves as the core game loop.
 // It manages the continuous updating of the simulation's state, ensuring that
 // the a
@@ -18,6 +22,9 @@ public class Simulation {
     private Pane root;
     private AnimationTimer timer;
     private long lastTime;
+
+    private List<Car> cars = new ArrayList<>();
+    private Random random = new Random();
 
     public Simulation(Pane root) {
         this.root = root;
@@ -40,7 +47,67 @@ public class Simulation {
     }
 
     private void update(double dt) {
-        // future: update cars, lights, etc.
+        updateCars(dt);
+    }
+
+    public void addCar(String arrowKey) {
+        double speed = 100; // px/sec
+        String route = randomRoute();
+        Color color = Color.color(random.nextDouble(), random.nextDouble(), random.nextDouble());
+
+        double x = 0, y = 0;
+        String moveDir = "";
+        int shift = 52;
+        int center = 26;
+        switch (arrowKey) {
+            case "UP":
+                x = 406;
+                y = 800;
+                moveDir = "N";
+                break; // from south
+            case "DOWN":
+                x = 354;
+                y = 0;
+                moveDir = "S";
+                break; // from north
+            case "RIGHT":
+                x = 0;
+                y = 354;
+                moveDir = "E";
+                break; // from west
+            case "LEFT":
+                x = 800;
+                y = 406;
+                moveDir = "W";
+                break; // from east
+        }
+
+        Car car = new Car(x, y, moveDir, color, speed, route);
+        cars.add(car);
+        root.getChildren().add(car.getShape());
+    }
+
+    public void addCarRandom() {
+        String[] keys = { "UP", "DOWN", "LEFT", "RIGHT" };
+        String randomKey = keys[random.nextInt(keys.length)];
+        addCar(randomKey);
+    }
+
+    private String randomRoute() {
+        String[] routes = { "LEFT", "RIGHT", "STRAIGHT" };
+        return routes[random.nextInt(routes.length)];
+    }
+
+    private void updateCars(double dt) {
+        List<Car> toRemove = new ArrayList<>();
+        for (Car car : cars) {
+            car.update(dt);
+            if (car.isOffScreen(800)) {
+                toRemove.add(car);
+                root.getChildren().remove(car.getShape());
+            }
+        }
+        cars.removeAll(toRemove);
     }
 
     private void setupEnvironment() {
@@ -55,7 +122,7 @@ public class Simulation {
         // --- Lane dividers ---
 
         // North ↔ West
-        Line nwLine1 = new Line(0, 400  , 800, 400); // top-left diagonal / adjust as needed
+        Line nwLine1 = new Line(0, 400, 800, 400); // top-left diagonal / adjust as needed
         nwLine1.getStrokeDashArray().addAll(10.0, 10.0); // 10px dash, 10px gap
         nwLine1.setStroke(Color.WHITE);
         nwLine1.setStrokeWidth(3);

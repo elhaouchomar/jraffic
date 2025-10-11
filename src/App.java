@@ -10,7 +10,6 @@ import javafx.animation.AnimationTimer;
 // the a
 // pplication remains responsive and that animations proceed smoothly.
 
-
 public class App extends Application {
 
     private Pane root;
@@ -26,6 +25,16 @@ public class App extends Application {
         stage.setScene(scene);
         stage.show();
 
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case UP -> simulation.addCar("UP");
+                case DOWN -> simulation.addCar("DOWN");
+                case LEFT -> simulation.addCar("LEFT");
+                case RIGHT -> simulation.addCar("RIGHT");
+                case R -> simulation.addCarRandom(); // random direction
+            }
+        });
+
         simulation = new Simulation(root);
         simulation.start();
     }
@@ -34,4 +43,3 @@ public class App extends Application {
         launch(args);
     }
 }
-
