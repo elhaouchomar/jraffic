@@ -1,11 +1,33 @@
-- first download javafx libray and make sure you download version 17 exaclty !!!!
-https://gluonhq.com/products/javafx/
+## **Running the Project**
 
+1. **Download JavaFX SDK (version 17)**
+   Make sure to download **exactly version 17**:
+   [https://gluonhq.com/products/javafx/](https://gluonhq.com/products/javafx/)
 
-resources : https://www.geeksforgeeks.org/java/javafx-tutorial/
+2. **Unzip the SDK**
+   Extract the downloaded archive into your home directory (or any preferred location). For example:
 
+   ```bash
+   ~/javafx-sdk-17
+   ```
 
-- then unzip it in the home directory:
+3. **Run the project using the provided script**
+   The `run.sh` script handles compilation and JavaFX module paths automatically:
+
+   ```bash
+   ./run.sh
+   ```
+
+> ⚠️ Important: The project has been tested with **JavaFX 17** only. Using a different version may cause compilation or runtime errors.
+
+---
+
+If you want, I can **also add a small note for Windows users** explaining how to adjust the `run.sh` path or use `run.bat` so everyone in your team can run it easily.
+
+Do you want me to do that?
+
+---
+
 
 
 # ✅ **Jraffic Project — 16-Hour TODO Plan**
