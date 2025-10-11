@@ -76,12 +76,12 @@ public class Simulation {
                 break; // from north → down
             case "RIGHT":
                 x = 0;
-                y = 354;
+                y = 406;
                 moveDir = "E";
                 break; // from west → right
             case "LEFT":
                 x = 800;
-                y = 406;
+                y = 354;
                 moveDir = "W";
                 break; // from east → left
             default:

@@ -79,7 +79,7 @@ Do you want me to do that?
   * [X] `r` → random direction.
 * [X] Add random route (LEFT / RIGHT / STRAIGHT).
 * [X] Add cars to simulation list and update in loop.
-* [ ] Implement **safe distance** (cars stop before next car).
+* [X] Implement **safe distance** (cars stop before next car).
 * [X] Remove cars exiting the screen.
 
 ✅ **Goal:** Cars spawn, move correctly, and respect spacing.
