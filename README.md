@@ -1,6 +1,10 @@
 - first download javafx libray and make sure you download version 17 exaclty !!!!
 https://gluonhq.com/products/javafx/
 
+
+resources : https://www.geeksforgeeks.org/java/javafx-tutorial/
+
+
 - then unzip it in the home directory:
 
 
@@ -11,21 +15,21 @@ https://gluonhq.com/products/javafx/
 ## 🕐 **PHASE 1 — Setup & Structure (2h)**
 
 * [X] Create a new **JavaFX project**.
-* [ ] Implement main class `App` extending `Application`.
-* [ ] Create scene (≈800×800) and add a `Pane` or `Group` for drawing.
-* [ ] Create core classes:
+* [X] Implement main class `App` extending `Application`.
+* [X] Create scene (≈800×800) and add a `Pane` or `Group` for drawing.
+* [X] Create core classes:
 
-  * [ ] `Car`
-  * [ ] `TrafficLight`
-  * [ ] `Road`
-  * [ ] `Intersection`
-  * [ ] `TrafficController`
-  * [ ] `Simulation` (or main update loop)
-* [ ] Add constants file (`Constants.java`) for sizes, speeds, timing, etc.
-* [ ] Create main animation loop using `Timeline` or `AnimationTimer`.
+  * [X] `Car`
+  * [X] `TrafficLight`
+  * [X] `Road`
+  * [X] `Intersection`
+  * [X] `TrafficController`
+  * [X] `Simulation` (or main update loop)
+* [X] Add constants file (`Constants.java`) for sizes, speeds, timing, etc.
+* [X] Create main animation loop using `Timeline` or `AnimationTimer`.
 
 ✅ **Goal:** Empty window + class skeletons + update loop running.
-
+17:30 ?? 18:23
 ---
 18:00
 ## 🕑 **PHASE 2 — Draw Environment (2h)**

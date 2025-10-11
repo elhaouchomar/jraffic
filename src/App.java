@@ -5,6 +5,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.animation.AnimationTimer;
 
+// The Simulation class in your JavaFX application serves as the core game loop.
+// It manages the continuous updating of the simulation's state, ensuring that
+// the a
+// pplication remains responsive and that animations proceed smoothly.
+
+
 public class App extends Application {
 
     private Pane root;
@@ -28,3 +34,4 @@ public class App extends Application {
         launch(args);
     }
 }
+
