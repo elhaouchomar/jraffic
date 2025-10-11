@@ -1,0 +1,5 @@
+{
+    "java.project.referencedLibraries": [
+        "~/openjfx-17.0.16_linux-x64_bin-sdk/javafx-sdk-17.0.16/lib/*.jar"
+    ]
+}
