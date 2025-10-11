@@ -24,6 +24,9 @@ public class Simulation {
     private long lastTime;
 
     private List<Car> cars = new ArrayList<>();
+    private final List<Car> carsToAdd = new ArrayList<>();
+    private final List<Car> carsToRemove = new ArrayList<>();
+
     private Random random = new Random();
 
     public Simulation(Pane root) {
@@ -50,6 +53,7 @@ public class Simulation {
         updateCars(dt);
     }
 
+    /// --->
     public void addCar(String arrowKey) {
         double speed = 100; // px/sec
         String route = randomRoute();
@@ -57,32 +61,71 @@ public class Simulation {
 
         double x = 0, y = 0;
         String moveDir = "";
+
+        // --- Accurate spawn coordinates ---
         switch (arrowKey) {
             case "UP":
                 x = 406;
                 y = 800;
                 moveDir = "N";
-                break; // from south
+                break; // from south → up
             case "DOWN":
                 x = 354;
                 y = 0;
                 moveDir = "S";
-                break; // from north
+                break; // from north → down
             case "RIGHT":
                 x = 0;
                 y = 354;
                 moveDir = "E";
-                break; // from west
+                break; // from west → right
             case "LEFT":
                 x = 800;
                 y = 406;
                 moveDir = "W";
-                break; // from east
+                break; // from east → left
+            default:
+                return;
         }
 
+        // --- Safety check before adding ---
+        double safeDistance = 80; // pixels between cars
+        boolean canSpawn = true;
+
+        for (Car other : cars) {
+            if (other.getDirection().equals(moveDir)) {
+                double dx = Math.abs(other.getX() - x);
+                double dy = Math.abs(other.getY() - y);
+
+                switch (moveDir) {
+                    case "N":
+                        if (other.getY() < y && dy < safeDistance && dx < 30)
+                            canSpawn = false;
+                        break;
+                    case "S":
+                        if (other.getY() > y && dy < safeDistance && dx < 30)
+                            canSpawn = false;
+                        break;
+                    case "E":
+                        if (other.getX() > x && dx < safeDistance && dy < 30)
+                            canSpawn = false;
+                        break;
+                    case "W":
+                        if (other.getX() < x && dx < safeDistance && Math.abs(dy) < 30)
+                            canSpawn = false;
+                        break;
+                }
+            }
+        }
+
+        if (!canSpawn) {
+            System.out.println("❌ Not enough space to add a new car on " + moveDir + " lane.");
+            return;
+        }
+
+        // --- Safe to add the car ---
         Car car = new Car(x, y, moveDir, color, speed, route);
-        cars.add(car);
-        root.getChildren().add(car.getShape());
+        carsToAdd.add(car); // queue it instead of adding immediately
     }
 
     public void addCarRandom() {
@@ -97,15 +140,97 @@ public class Simulation {
     }
 
     private void updateCars(double dt) {
-        List<Car> toRemove = new ArrayList<>();
-        for (Car car : cars) {
-            car.update(dt);
-            if (car.isOffScreen(800)) {
-                toRemove.add(car);
-                root.getChildren().remove(car.getShape());
+        // Safely add cars from queue
+        if (!carsToAdd.isEmpty()) {
+            for (Car c : carsToAdd) {
+                cars.add(c);
+                root.getChildren().add(c.getShape());
             }
+            carsToAdd.clear();
         }
-        cars.removeAll(toRemove);
+
+        for (Car car : cars) {
+            Car nearestAhead = null;
+            double minDist = Double.MAX_VALUE;
+
+            for (Car other : cars) {
+                if (car == other)
+                    continue;
+                if (!car.getDirection().equals(other.getDirection()))
+                    continue;
+
+                double dx = other.getX() - car.getX();
+                double dy = other.getY() - car.getY();
+                double dist = switch (car.getDirection()) {
+                    case "N" -> car.getY() - other.getY();
+                    case "S" -> other.getY() - car.getY();
+                    case "E" -> other.getX() - car.getX();
+                    case "W" -> car.getX() - other.getX();
+                    default -> Double.MAX_VALUE;
+                };
+
+                if (dist > 0 && dist < minDist) {
+                    minDist = dist;
+                    nearestAhead = other;
+                }
+            }
+
+            boolean canMove = nearestAhead == null || minDist > 50;
+            if (canMove)
+                car.update(dt);
+
+            if (car.isOffScreen(800))
+                carsToRemove.add(car);
+        }
+
+        double safeDistance = 50;
+
+        for (Car car : cars) {
+            boolean canMove = true;
+
+            for (Car other : cars) {
+                if (car == other)
+                    continue;
+                if (car.getDirection().equals(other.getDirection())) {
+                    double dx = other.getX() - car.getX();
+                    double dy = other.getY() - car.getY();
+
+                    switch (car.getDirection()) {
+                        case "N":
+                            if (dy < 0 && Math.abs(dy) < safeDistance && Math.abs(dx) < 20)
+                                canMove = false;
+                            break;
+                        case "S":
+                            if (dy > 0 && dy < safeDistance && Math.abs(dx) < 20)
+                                canMove = false;
+                            break;
+                        case "E":
+                            if (dx > 0 && dx < safeDistance && Math.abs(dy) < 20)
+                                canMove = false;
+                            break;
+                        case "W":
+                            if (dx < 0 && Math.abs(dx) < safeDistance && Math.abs(dy) < 20)
+                                canMove = false;
+                            break;
+                    }
+                }
+            }
+
+            if (canMove)
+                car.update(dt);
+
+            if (car.isOffScreen(800))
+                carsToRemove.add(car);
+        }
+
+        // Safely remove cars
+        if (!carsToRemove.isEmpty()) {
+            for (Car c : carsToRemove) {
+                root.getChildren().remove(c.getShape());
+            }
+            cars.removeAll(carsToRemove);
+            carsToRemove.clear();
+        }
     }
 
     private void setupEnvironment() {
