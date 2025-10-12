@@ -140,3 +140,11 @@
 
 ✅ **Goal:** Stable, readable, ready-to-submit project.
 22:00
+
+
+
+## 🕖 ** Bug Fixing
+* [ ] 
+* [ ] improve light algorithm to prevent jam (other improvements)
+* [ ] green car comming from east has weird behaviour in intersection
+* [ ] improve safty distance : optional

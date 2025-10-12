@@ -47,9 +47,9 @@ public class Simulation {
         if (controller != null) {
             controller.update(dt);
         }
-        for (TrafficLight tl : lights) {
-            tl.update(dt);
-        }
+        // for (TrafficLight tl : lights) {
+        //     tl.update(dt);
+        // }
         updateCars(dt);
     }
 
@@ -138,7 +138,7 @@ public class Simulation {
             carsToAdd.clear();
         }
 
-        double safeDistance = 50;
+        double safeDistance = 80;
         carsToRemove.clear();
 
         for (Car car : cars) {
@@ -208,7 +208,7 @@ public class Simulation {
                 frontY = car.getY();
                 return frontY > 450 && frontY < 455;
             case "W": // From East, moving West
-                frontX = car.getX();
+                frontX = car.getX() ;
                 return frontX > 450 && frontX < 455;
             case "E": // From West, moving East
                 frontX = car.getX() + 40;
@@ -220,13 +220,13 @@ public class Simulation {
 
     private TrafficLight.State getRelevantLightStateFor(Car car) {
         switch (car.getFromDirection()) {
-            case "N":
-                return lights.get(0).getState(); // tlNorth
-            case "S":
-                return lights.get(1).getState(); // tlSouth
-            case "E":
-                return lights.get(2).getState(); // tlEast
             case "W":
+                return lights.get(0).getState(); // tlNorth
+            case "E":
+                return lights.get(1).getState(); // tlSouth
+            case "N":
+                return lights.get(2).getState(); // tlEast
+            case "S":
                 return lights.get(3).getState(); // tlWest
             default:
                 return TrafficLight.State.RED;

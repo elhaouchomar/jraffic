@@ -68,10 +68,10 @@ public class TrafficController {
 
     private int getIndexForDirection(String direction) {
         return switch (direction) {
-            case "N" -> 0;
-            case "S" -> 1;
-            case "E" -> 2;
-            case "W" -> 3;
+            case "N" -> 2;
+            case "S" -> 3;
+            case "E" -> 1;
+            case "W" -> 0;
             default -> -1;
         };
     }
