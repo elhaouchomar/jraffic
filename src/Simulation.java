@@ -68,11 +68,11 @@ public class Simulation {
                 break;
             case "DOWN":
                 x = 354;
-                y = 0;
+                y = -40;
                 moveDir = "S"; // from North, moving South
                 break;
             case "RIGHT":
-                x = 0;
+                x = -40;
                 y = 406;
                 moveDir = "E"; // from West, moving East
                 break;
