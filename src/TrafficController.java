@@ -1,27 +1,25 @@
 import java.util.List;
 
 public class TrafficController {
-    private final List<TrafficLight> lights; // all 4 lights: [North, South, East, West]
+    private final List<TrafficLight> lights; // N, S, E, W
     private final List<Car> cars;
 
     private String currentGreenDirection = null; // N, S, E, or W
 
-    public TrafficController(List<TrafficLight> ns, List<TrafficLight> ew, List<Car> cars) {
-        this.lights = List.of(ns.get(0), ns.get(1), ew.get(0), ew.get(1)); // N, S, E, W
+    public TrafficController(List<TrafficLight> lights, List<Car> cars) {
+        this.lights = lights;
         this.cars = cars;
         setAllRed(); // Start with all lights red
     }
 
     public void update(double dt) {
         if (currentGreenDirection != null) {
-            // A light is green, check if it should be turned red
             if (countActiveCarsOnRoad(currentGreenDirection) == 0) {
                 System.out.println("🚫 Road " + currentGreenDirection + " is clear. Setting all lights to red.");
                 setAllRed();
                 currentGreenDirection = null;
             }
         } else {
-            // All lights are red, find the busiest road to turn green
             String busiestDirection = getBusiestDirection();
             if (busiestDirection != null) {
                 System.out.println("🟢 Turning light green for " + busiestDirection + " road.");
@@ -81,7 +79,7 @@ public class TrafficController {
     private int countActiveCarsOnRoad(String direction) {
         int count = 0;
         for (Car car : cars) {
-            if (car.getDirection().equals(direction) && isCarOnRoad(car)) {
+            if (car.getFromDirection().equals(direction) && isCarOnRoad(car)) {
                 count++;
             }
         }
@@ -91,7 +89,7 @@ public class TrafficController {
     private boolean isCarOnRoad(Car car) {
         double x = car.getX();
         double y = car.getY();
-        String dir = car.getDirection();
+        String dir = car.getFromDirection();
 
         // Define zones that cover the car's path until it exits the screen
         switch (dir) {

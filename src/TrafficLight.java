@@ -16,9 +16,7 @@ public class TrafficLight {
     }
 
     // No update needed - lights are controlled externally by TrafficController
-    public void update(double dt) {
-        // Empty - no timer-based logic anymore
-    }
+    public void update(double dt) {}
 
     private Color getColor() {
         return (state == State.RED) ? Color.RED : Color.LIMEGREEN;

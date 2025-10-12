@@ -1,31 +1,28 @@
-
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Car {
-    // --- Properties ---
-    private double x, y; // position
-    private double speed; // pixels per second
-    private String direction; // "N", "S", "E", "W"
-    private Rectangle shape; // graphical representation
-    private String route; // "LEFT", "RIGHT", "STRAIGHT"
+    private double x, y;
+    private double speed;
+    private String fromDirection; // The direction the car is coming from
+    private String direction; // The current direction of travel
+    private Rectangle shape;
+    private String route;
 
     private static final double WIDTH = 40;
     private static final double HEIGHT = 40;
 
-    private boolean turning = false;
-    private double targetX, targetY; // intersection point for the turn
-
-    private boolean turned = false;
+    private enum TurnPhase { NONE, PHASE_1, PHASE_2 }
+    private TurnPhase turnPhase = TurnPhase.NONE;
 
     public Car(double x, double y, String direction, double speed, String route) {
         this.x = x;
         this.y = y;
+        this.fromDirection = direction;
         this.direction = direction;
         this.speed = speed;
         this.route = route;
 
-        // Assign color based on route
         Color color;
         switch (route) {
             case "LEFT" -> color = Color.RED;
@@ -39,147 +36,90 @@ public class Car {
     }
 
     public void update(double dt) {
-        if (turning && !turned) {
-            switch (direction) {
-                case "N":
-                if (route.equals("LEFT")) {
-                    // move upward until aligned with center, then turn west
-                    if (y > targetY) {
-                        y -= speed * dt;
-                    } else {
-                        direction = "W";
-                        turned = true;
-                        turning = false;
-                    }
-                } else if (route.equals("RIGHT")) {
-                    // move upward, then turn east earlier
-                    if (y > targetY) {
-                        y -= speed * dt;
-                    } else {
-                        direction = "E";
-                        turned = true;
-                        turning = false;
-                    }
-                }
-                break;
-                
-                case "S":
-                if (route.equals("LEFT")) {
-                    if (y < targetY) {
-                        y += speed * dt;
-                    } else {
-                        direction = "E";
-                        turned = true;
-                        turning = false;
-                    }
-                } else if (route.equals("RIGHT")) {
-                        if (y < targetY) {
-                            y += speed * dt ;
-                        } else {
-                            direction = "W";
-                            turned = true;
-                            turning = false;
-                        }
-                    }
-                    break;
+        if (turnPhase == TurnPhase.NONE && !route.equals("STRAIGHT") && isInIntersection()) {
+            turnPhase = TurnPhase.PHASE_1;
+        }
 
-                case "E":
-                    if (route.equals("LEFT")) {
-                        if (x < targetX) {
-                            x += 1;
-                        } else {
-                            direction = "N";
-                            turned = true;
-                            turning = false;
-                        }
-                    } else if (route.equals("RIGHT")) {
-                        if (x < targetX) {
-                            x += speed * dt;
-                        } else {
-                            direction = "S";
-                            turned = true;
-                            turning = false;
-                        }
-                    }
-                    break;
-
-                case "W":
-                    if (route.equals("LEFT")) {
-                        if (x > targetX) {
-                            x -= speed * dt;
-                        } else {
-                            direction = "S";
-                            turned = true;
-                            turning = false;
-                        }
-                    } else if (route.equals("RIGHT")) {
-                        if (x > targetX) {
-                            x -= speed * dt;
-                        } else {
-                            direction = "N";
-                            turned = true;
-                            turning = false;
-                        }
-                    }
-                    break;
+        if (turnPhase != TurnPhase.NONE) {
+            if (route.equals("LEFT")) {
+                performLeftTurn(dt);
+            } else { // RIGHT
+                performRightTurn(dt);
             }
-
         } else {
-            // normal straight movement
-            switch (direction) {
-                case "N" -> y -= speed * dt;
-                case "S" -> y += speed * dt;
-                case "E" -> x += speed * dt;
-                case "W" -> x -= speed * dt;
-            }
-
-            // trigger the turn only once
-            if (!turned && isApproachingIntersection() && !route.equals("STRAIGHT")) {
-                turning = true;
-
-                // target depends on direction
-                targetX = 400;
-                targetY = 400;
-            }
+            moveStraight(dt);
         }
 
         shape.setX(x);
         shape.setY(y);
     }
 
-    public boolean isApproachingIntersection() {
-        int offset = 0;
-
-        // adjust trigger offset based on route
-        switch (route) {
-            case "LEFT" -> offset = 50; // go deeper before turning
-            case "RIGHT" -> offset = 0; // turn a bit earlier
-            default -> offset = 0; // straight
-        }
-
-        // System.out.println(offset);
-        // System.out.println(direction);
-        switch (direction) {
-            case "N":
-                // moving up → y decreasing
-                return (y - 4) < (400 - offset);
-            case "S":
-                // moving down → y increasing
-                boolean ss = (y + HEIGHT) > (400 - 4 + offset );
-                // System.out.println("comparing here  %b" + ss+ offset);
-                return (y + HEIGHT) > (400 - 4 + offset ); // + offset > 395 && y < 400 + offset;
-            case "E":
-                // moving right → x increasing
-                return (x + WIDTH) > (400 - 4 + offset); // offset > 390 && x < 400 + offset;
-            case "W":
-                // moving left → x decreasing
-                return (x - 4) < (400 - offset);// && x > 395 + offset;
-            default:
-                return false;
+    private void performLeftTurn(double dt) {
+        if (turnPhase == TurnPhase.PHASE_1) {
+            boolean targetReached = false;
+            switch (fromDirection) {
+                case "N": // From South
+                    if (y > 354) { y -= speed * dt; } else { y = 354; targetReached = true; }
+                    break;
+                case "S": // From North
+                    if (y < 406) { y += speed * dt; } else { y = 406; targetReached = true; }
+                    break;
+                case "E": // From West
+                    if (x < 406) { x += speed * dt; } else { x = 406; targetReached = true; }
+                    break;
+                case "W": // From East
+                    if (x > 354) { x -= speed * dt; } else { x = 354; targetReached = true; }
+                    break;
+            }
+            if (targetReached) {
+                direction = turnLeftDirection(fromDirection);
+                turnPhase = TurnPhase.PHASE_2;
+            }
+        } else if (turnPhase == TurnPhase.PHASE_2) {
+            moveStraight(dt);
         }
     }
 
-    // helper functions
+    private void performRightTurn(double dt) {
+        if (turnPhase == TurnPhase.PHASE_1) {
+            boolean targetReached = false;
+            switch (fromDirection) {
+                case "N": // From South, turning East
+                    if (y > 406) { y -= speed * dt; } else { y = 406; targetReached = true; }
+                    break;
+                case "S": // From North, turning West
+                    if (y < 354) { y += speed * dt; } else { y = 354; targetReached = true; }
+                    break;
+                case "E": // From West, turning South
+                    if (x > 354) { x -= speed * dt; } else { x = 354; targetReached = true; }
+                    break;
+                case "W": // From East, turning North
+                    if (x < 406) { x += speed * dt; } else { x = 406; targetReached = true; }
+                    break;
+            }
+            if (targetReached) {
+                direction = turnRightDirection(fromDirection);
+                turnPhase = TurnPhase.PHASE_2;
+            }
+        } else if (turnPhase == TurnPhase.PHASE_2) {
+            moveStraight(dt);
+        }
+    }
+
+    private void moveStraight(double dt) {
+        switch (direction) {
+            case "N" -> y -= speed * dt;
+            case "S" -> y += speed * dt;
+            case "E" -> x += speed * dt;
+            case "W" -> x -= speed * dt;
+        }
+    }
+
+    public boolean isInIntersection() {
+        // Check if the car is anywhere within the main intersection area
+        return x > 350 && x < 450 && y > 350 && y < 450;
+    }
+
     private String turnLeftDirection(String dir) {
         return switch (dir) {
             case "N" -> "W";
@@ -212,19 +152,14 @@ public class Car {
         return y;
     }
 
-    public double getWidth() {
-        return WIDTH;
-    }
-
-    public double getHeight() {
-        return HEIGHT;
-    }
-
     public String getDirection() {
         return direction;
     }
 
-    // Check if car is off-screen
+    public String getFromDirection() {
+        return fromDirection;
+    }
+
     public boolean isOffScreen(double windowSize) {
         return x < -50 || x > windowSize + 50 || y < -50 || y > windowSize + 50;
     }
