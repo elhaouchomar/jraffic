@@ -40,57 +40,111 @@ public class Car {
 
     public void update(double dt) {
         if (turning && !turned) {
-            // simple linear approximation for turning
-            double dx = targetX - x;
-            double dy = targetY - y;
-            double dist = Math.sqrt(dx * dx + dy * dy);
+            switch (direction) {
+                case "N":
+                    if (route.equals("LEFT")) {
+                        // move upward until aligned with center, then turn west
+                        if (y > targetY) {
+                            y -= speed * dt;
+                        } else {
+                            direction = "W";
+                            turned = true;
+                            turning = false;
+                        }
+                    } else if (route.equals("RIGHT")) {
+                        // move upward, then turn east earlier
+                        if (y > targetY) {
+                            y -= speed * dt;
+                        } else {
+                            direction = "E";
+                            turned = true;
+                            turning = false;
+                        }
+                    }
+                    break;
 
-            if (dist < 5) {
-                // Snap exactly to target to end the turn cleanly
-                x = targetX;
-                y = targetY;
+                case "S":
+                    if (route.equals("LEFT")) {
+                        if (y < targetY) {
+                            y += speed * dt;
+                        } else {
+                            direction = "E";
+                            turned = true;
+                            turning = false;
+                        }
+                    } else if (route.equals("RIGHT")) {
+                        if (y < targetY) {
+                            y += speed * dt;
+                        } else {
+                            direction = "W";
+                            turned = true;
+                            turning = false;
+                        }
+                    }
+                    break;
 
-                turning = false;
+                case "E":
+                    if (route.equals("LEFT")) {
+                        if (x < targetX) {
+                            x += speed * dt;
+                        } else {
+                            direction = "N";
+                            turned = true;
+                            turning = false;
+                        }
+                    } else if (route.equals("RIGHT")) {
+                        if (x < targetX) {
+                            x += speed * dt;
+                        } else {
+                            direction = "S";
+                            turned = true;
+                            turning = false;
+                        }
+                    }
+                    break;
 
-                switch (route) {
-                    case "LEFT" -> direction = turnLeftDirection(direction);
-                    case "RIGHT" -> direction = turnRightDirection(direction);
-                }
-                this.turned = true;
-            } else {
-                x += (dx / dist) * speed * dt;
-                y += (dy / dist) * speed * dt;
+                case "W":
+                    if (route.equals("LEFT")) {
+                        if (x > targetX) {
+                            x -= speed * dt;
+                        } else {
+                            direction = "S";
+                            turned = true;
+                            turning = false;
+                        }
+                    } else if (route.equals("RIGHT")) {
+                        if (x > targetX) {
+                            x -= speed * dt;
+                        } else {
+                            direction = "N";
+                            turned = true;
+                            turning = false;
+                        }
+                    }
+                    break;
             }
 
         } else {
-            // normal movement
+            // normal straight movement
             switch (direction) {
-                case "N":
-                    y -= speed * dt;
-                    break;
-                case "S":
-                    y += speed * dt;
-                    break;
-                case "E":
-                    x += speed * dt;
-                    break;
-                case "W":
-                    x -= speed * dt;
-                    break;
+                case "N" -> y -= speed * dt;
+                case "S" -> y += speed * dt;
+                case "E" -> x += speed * dt;
+                case "W" -> x -= speed * dt;
             }
 
-            // check if entering intersection
-            if (isApproachingIntersection() && !route.equals("STRAIGHT")) {
+            // trigger the turn only once
+            if (!turned && isApproachingIntersection() && !route.equals("STRAIGHT")) {
                 turning = true;
-                targetX = 400; // center of intersection
+
+                // target depends on direction
+                targetX = 400;
                 targetY = 400;
             }
-
         }
 
         shape.setX(x);
         shape.setY(y);
-
     }
 
     public boolean isApproachingIntersection() {
@@ -104,17 +158,19 @@ public class Car {
         }
 
         System.out.println(offset);
-        System.out.println(direction);
+        // System.out.println(direction);
         switch (direction) {
             case "N":
                 // moving up → y decreasing
                 return (y - 4) < (400 - offset);
             case "S":
                 // moving down → y increasing
-                return (y + HEIGHT + 4) > (400 + offset); // + offset > 395 && y < 400 + offset;
+                boolean ss = (y + HEIGHT) > (400 - 4 + offset );
+                System.out.println("comparing here  %b" + ss+ offset);
+                return (y + HEIGHT) > (400 - 4 + offset ); // + offset > 395 && y < 400 + offset;
             case "E":
                 // moving right → x increasing
-                return (x + HEIGHT + 4) > (400 + offset); // offset > 390 && x < 400 + offset;
+                return (x + WIDTH) > (400 - 4 + offset); // offset > 390 && x < 400 + offset;
             case "W":
                 // moving left → x decreasing
                 return (x - 4) < (400 - offset);// && x > 395 + offset;

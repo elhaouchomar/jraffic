@@ -168,7 +168,7 @@ public class Simulation {
                 TrafficLight.State lightState = getRelevantLightStateFor(car);
                 if (lightState == TrafficLight.State.RED) {
                     canMove = false;
-                    System.out.println("car stopped because of light");
+                    //System.out.println("car stopped because of light");
                 }
             }
 
