@@ -1,5 +1,6 @@
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -7,8 +8,7 @@ import javafx.animation.AnimationTimer;
 
 // The Simulation class in your JavaFX application serves as the core game loop.
 // It manages the continuous updating of the simulation's state, ensuring that
-// the a
-// pplication remains responsive and that animations proceed smoothly.
+// the application remains responsive and that animations proceed smoothly.
 
 public class App extends Application {
 
@@ -32,7 +32,8 @@ public class App extends Application {
                 case LEFT -> simulation.addCar("LEFT");
                 case RIGHT -> simulation.addCar("RIGHT");
                 case R -> simulation.addCarRandom(); // random direction
-            }
+                case ESCAPE -> javafx.application.Platform.exit();
+}
         });
 
         simulation = new Simulation(root);

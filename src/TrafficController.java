@@ -1,87 +1,110 @@
 import java.util.List;
 
 public class TrafficController {
-    private final List<TrafficLight> northSouth;
-    private final List<TrafficLight> eastWest;
-    private final List<Car> cars; // cars in simulation
+    private final List<TrafficLight> lights; // all 4 lights: [North, South, East, West]
+    private final List<Car> cars;
 
-    private double timer = 0;
-    private double cycle = 6.0; // seconds per phase
-    private boolean nsGreen = true;
+    private String currentGreenDirection = null; // N, S, E, or W
 
     public TrafficController(List<TrafficLight> ns, List<TrafficLight> ew, List<Car> cars) {
-        this.northSouth = ns;
-        this.eastWest = ew;
-        this.cars = cars; // initialize cars
-        setPhase(true);
-    }
-
-    // Map TrafficLight to its direction
-    private String tlDirection(TrafficLight tl) {
-        if (northSouth.contains(tl)) {
-            return northSouth.indexOf(tl) == 0 ? "N" : "S";
-        } else {
-            return eastWest.indexOf(tl) == 0 ? "E" : "W";
-        }
-    }
-
-    private boolean isIntersectionClear(String dir) {
-        for (Car car : cars) {
-            switch (dir) {
-                case "N":
-                    if (car.getDirection().equals("N") && car.getY() < 450 && car.getY() > 350)
-                        return false;
-                    break;
-                case "S":
-                    if (car.getDirection().equals("S") && car.getY() > 350 && car.getY() < 450)
-                        return false;
-                    break;
-                case "E":
-                    if (car.getDirection().equals("E") && car.getX() > 350 && car.getX() < 450)
-                        return false;
-                    break;
-                case "W":
-                    if (car.getDirection().equals("W") && car.getX() < 450 && car.getX() > 350)
-                        return false;
-                    break;
-            }
-        }
-        return true;
+        this.lights = List.of(ns.get(0), ns.get(1), ew.get(0), ew.get(1)); // N, S, E, W
+        this.cars = cars;
+        setAllRed(); // Start with all lights red
     }
 
     public void update(double dt) {
-        timer += dt;
-        if (timer >= cycle) {
-            boolean canSwitch = true;
-            if (nsGreen) { // switching to E–W green
-                for (TrafficLight tl : northSouth) {
-                    if (!isIntersectionClear(tlDirection(tl))) {
-                        canSwitch = false;
-                        break;
-                    }
-                }
-            } else { // switching to N–S green
-                for (TrafficLight tl : eastWest) {
-                    if (!isIntersectionClear(tlDirection(tl))) {
-                        canSwitch = false;
-                        break;
-                    }
-                }
+        if (currentGreenDirection != null) {
+            // A light is green, check if it should be turned red
+            if (countActiveCarsOnRoad(currentGreenDirection) == 0) {
+                System.out.println("🚫 Road " + currentGreenDirection + " is clear. Setting all lights to red.");
+                setAllRed();
+                currentGreenDirection = null;
             }
-
-            if (canSwitch) {
-                nsGreen = !nsGreen;
-                setPhase(nsGreen);
-                timer = 0;
+        } else {
+            // All lights are red, find the busiest road to turn green
+            String busiestDirection = getBusiestDirection();
+            if (busiestDirection != null) {
+                System.out.println("🟢 Turning light green for " + busiestDirection + " road.");
+                setGreen(busiestDirection);
+                currentGreenDirection = busiestDirection;
             }
-            // else: wait for next frame until intersection is clear
         }
     }
 
-    private void setPhase(boolean nsGreen) {
-        for (TrafficLight tl : northSouth)
-            tl.setState(nsGreen ? TrafficLight.State.GREEN : TrafficLight.State.RED);
-        for (TrafficLight tl : eastWest)
-            tl.setState(nsGreen ? TrafficLight.State.RED : TrafficLight.State.GREEN);
+    private String getBusiestDirection() {
+        int northWaiting = countActiveCarsOnRoad("N");
+        int southWaiting = countActiveCarsOnRoad("S");
+        int eastWaiting = countActiveCarsOnRoad("E");
+        int westWaiting = countActiveCarsOnRoad("W");
+
+        int maxWaiting = Math.max(Math.max(northWaiting, southWaiting), Math.max(eastWaiting, westWaiting));
+
+        if (maxWaiting == 0) {
+            return null; // No cars waiting anywhere
+        }
+
+        // Prioritize in order N -> S -> E -> W in case of a tie
+        if (northWaiting == maxWaiting) {
+            return "N";
+        } else if (southWaiting == maxWaiting) {
+            return "S";
+        } else if (eastWaiting == maxWaiting) {
+            return "E";
+        } else {
+            return "W";
+        }
+    }
+
+    private void setAllRed() {
+        for (TrafficLight tl : lights) {
+            tl.setState(TrafficLight.State.RED);
+        }
+    }
+
+    private void setGreen(String direction) {
+        int index = getIndexForDirection(direction);
+        if (index != -1) {
+            lights.get(index).setState(TrafficLight.State.GREEN);
+        }
+    }
+
+    private int getIndexForDirection(String direction) {
+        return switch (direction) {
+            case "N" -> 0;
+            case "S" -> 1;
+            case "E" -> 2;
+            case "W" -> 3;
+            default -> -1;
+        };
+    }
+
+    private int countActiveCarsOnRoad(String direction) {
+        int count = 0;
+        for (Car car : cars) {
+            if (car.getDirection().equals(direction) && isCarOnRoad(car)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private boolean isCarOnRoad(Car car) {
+        double x = car.getX();
+        double y = car.getY();
+        String dir = car.getDirection();
+
+        // Define zones that cover the car's path until it exits the screen
+        switch (dir) {
+            case "N": // Moving up
+                return y > 350;
+            case "S": // Moving down
+                return y < 450;
+            case "E": // Moving right
+                return x < 450;
+            case "W": // Moving left
+                return x > 350;
+            default:
+                return false;
+        }
     }
 }

@@ -102,7 +102,7 @@ public class Simulation {
             if (other.getDirection().equals(moveDir)) {
                 double dx = Math.abs(other.getX() - x);
                 double dy = Math.abs(other.getY() - y);
-
+                
                 switch (moveDir) {
                     case "N":
                         if (other.getY() < y && dy < safeDistance && dx < 30)
@@ -294,10 +294,10 @@ public class Simulation {
         root.getChildren().addAll(nwLine1, esLine1);
 
         // --- Traffic Lights (real TrafficLight objects) ---
-        TrafficLight tlNorth = new TrafficLight(330, 330, TrafficLight.State.GREEN);
-        TrafficLight tlSouth = new TrafficLight(470, 470, TrafficLight.State.GREEN);
-        TrafficLight tlEast = new TrafficLight(470, 330, TrafficLight.State.RED);
-        TrafficLight tlWest = new TrafficLight(330, 470, TrafficLight.State.RED);
+        TrafficLight tlWest = new TrafficLight(330, 330, TrafficLight.State.GREEN); // formerly tlNorth
+        TrafficLight tlEast = new TrafficLight(470, 470, TrafficLight.State.RED);   // formerly tlSouth
+        TrafficLight tlNorth = new TrafficLight(470, 330, TrafficLight.State.RED);  // formerly tlEast
+        TrafficLight tlSouth = new TrafficLight(330, 470, TrafficLight.State.RED);  // formerly tlWest
 
         // add to local list and to root for display
         lights.add(tlNorth);

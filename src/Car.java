@@ -42,39 +42,39 @@ public class Car {
         if (turning && !turned) {
             switch (direction) {
                 case "N":
-                    if (route.equals("LEFT")) {
-                        // move upward until aligned with center, then turn west
-                        if (y > targetY) {
-                            y -= speed * dt;
-                        } else {
-                            direction = "W";
-                            turned = true;
-                            turning = false;
-                        }
-                    } else if (route.equals("RIGHT")) {
-                        // move upward, then turn east earlier
-                        if (y > targetY) {
-                            y -= speed * dt;
-                        } else {
-                            direction = "E";
-                            turned = true;
-                            turning = false;
-                        }
+                if (route.equals("LEFT")) {
+                    // move upward until aligned with center, then turn west
+                    if (y > targetY) {
+                        y -= speed * dt;
+                    } else {
+                        direction = "W";
+                        turned = true;
+                        turning = false;
                     }
-                    break;
-
+                } else if (route.equals("RIGHT")) {
+                    // move upward, then turn east earlier
+                    if (y > targetY) {
+                        y -= speed * dt;
+                    } else {
+                        direction = "E";
+                        turned = true;
+                        turning = false;
+                    }
+                }
+                break;
+                
                 case "S":
-                    if (route.equals("LEFT")) {
+                if (route.equals("LEFT")) {
+                    if (y < targetY) {
+                        y += speed * dt;
+                    } else {
+                        direction = "E";
+                        turned = true;
+                        turning = false;
+                    }
+                } else if (route.equals("RIGHT")) {
                         if (y < targetY) {
-                            y += speed * dt;
-                        } else {
-                            direction = "E";
-                            turned = true;
-                            turning = false;
-                        }
-                    } else if (route.equals("RIGHT")) {
-                        if (y < targetY) {
-                            y += speed * dt;
+                            y += speed * dt ;
                         } else {
                             direction = "W";
                             turned = true;
@@ -86,7 +86,7 @@ public class Car {
                 case "E":
                     if (route.equals("LEFT")) {
                         if (x < targetX) {
-                            x += speed * dt;
+                            x += 1;
                         } else {
                             direction = "N";
                             turned = true;
@@ -157,7 +157,7 @@ public class Car {
             default -> offset = 0; // straight
         }
 
-        System.out.println(offset);
+        // System.out.println(offset);
         // System.out.println(direction);
         switch (direction) {
             case "N":
@@ -166,7 +166,7 @@ public class Car {
             case "S":
                 // moving down → y increasing
                 boolean ss = (y + HEIGHT) > (400 - 4 + offset );
-                System.out.println("comparing here  %b" + ss+ offset);
+                // System.out.println("comparing here  %b" + ss+ offset);
                 return (y + HEIGHT) > (400 - 4 + offset ); // + offset > 395 && y < 400 + offset;
             case "E":
                 // moving right → x increasing

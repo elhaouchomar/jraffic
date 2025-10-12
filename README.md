@@ -20,13 +20,6 @@
 
 > ⚠️ Important: The project has been tested with **JavaFX 17** only. Using a different version may cause compilation or runtime errors.
 
----
-
-If you want, I can **also add a small note for Windows users** explaining how to adjust the `run.sh` path or use `run.bat` so everyone in your team can run it easily.
-
-Do you want me to do that?
-
----
 
 
 
