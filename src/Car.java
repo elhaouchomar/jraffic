@@ -12,7 +12,10 @@ public class Car {
     private static final double WIDTH = 40;
     private static final double HEIGHT = 40;
 
-    private enum TurnPhase { NONE, PHASE_1, PHASE_2 }
+    private enum TurnPhase {
+        NONE, PHASE_1, PHASE_2
+    }
+
     private TurnPhase turnPhase = TurnPhase.NONE;
 
     public Car(double x, double y, String direction, double speed, String route) {
@@ -59,16 +62,36 @@ public class Car {
             boolean targetReached = false;
             switch (fromDirection) {
                 case "N": // From South
-                    if (y > 354) { y -= speed * dt; } else { y = 354; targetReached = true; }
+                    if (y > 354) {
+                        y -= speed * dt;
+                    } else {
+                        y = 354;
+                        targetReached = true;
+                    }
                     break;
                 case "S": // From North
-                    if (y < 406) { y += speed * dt; } else { y = 406; targetReached = true; }
+                    if (y < 406) {
+                        y += speed * dt;
+                    } else {
+                        y = 406;
+                        targetReached = true;
+                    }
                     break;
                 case "E": // From West
-                    if (x < 406) { x += speed * dt; } else { x = 406; targetReached = true; }
+                    if (x < 406) {
+                        x += speed * dt;
+                    } else {
+                        x = 406;
+                        targetReached = true;
+                    }
                     break;
                 case "W": // From East
-                    if (x > 354) { x -= speed * dt; } else { x = 354; targetReached = true; }
+                    if (x > 354) {
+                        x -= speed * dt;
+                    } else {
+                        x = 354;
+                        targetReached = true;
+                    }
                     break;
             }
             if (targetReached) {
@@ -80,21 +103,49 @@ public class Car {
         }
     }
 
+    public boolean isInIntersection() {
+        // Check if the car is anywhere within the main intersection area
+        if (fromDirection == "W" && route == "RIGHT") {
+            return x > 400 && x < 405 && y > 350 && y < 450;
+        }
+        return x > 350 && x < 450 && y > 350 && y < 450;
+    }
+
     private void performRightTurn(double dt) {
         if (turnPhase == TurnPhase.PHASE_1) {
             boolean targetReached = false;
             switch (fromDirection) {
                 case "N": // From South, turning East
-                    if (y > 406) { y -= speed * dt; } else { y = 406; targetReached = true; }
+                    if (y > 406) {
+                        y -= speed * dt;
+                    } else {
+                        y = 406;
+                        targetReached = true;
+                    }
                     break;
                 case "S": // From North, turning West
-                    if (y < 354) { y += speed * dt; } else { y = 354; targetReached = true; }
+                    if (y < 354) {
+                        y += speed * dt;
+                    } else {
+                        y = 354;
+                        targetReached = true;
+                    }
                     break;
                 case "E": // From West, turning South
-                    if (x > 354) { x -= speed * dt; } else { x = 354; targetReached = true; }
+                    if (x > 354) {
+                        x -= speed * dt;
+                    } else {
+                        x = 354;
+                        targetReached = true;
+                    }
                     break;
                 case "W": // From East, turning North
-                    if (x < 406) { x += speed * dt; } else { x = 406; targetReached = true; }
+                    if (x < 406) {
+                        x += speed * dt;
+                    } else {
+                        x = 406;
+                        targetReached = true;
+                    }
                     break;
             }
             if (targetReached) {
@@ -113,11 +164,6 @@ public class Car {
             case "E" -> x += speed * dt;
             case "W" -> x -= speed * dt;
         }
-    }
-
-    public boolean isInIntersection() {
-        // Check if the car is anywhere within the main intersection area
-        return x > 350 && x < 450 && y > 350 && y < 450;
     }
 
     private String turnLeftDirection(String dir) {
