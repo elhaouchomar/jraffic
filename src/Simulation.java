@@ -27,6 +27,9 @@ public class Simulation {
     private final List<Car> carsToAdd = new ArrayList<>();
     private final List<Car> carsToRemove = new ArrayList<>();
 
+    private List<TrafficLight> lights = new ArrayList<>();
+    private TrafficController controller;
+
     private Random random = new Random();
 
     public Simulation(Pane root) {
@@ -50,14 +53,20 @@ public class Simulation {
     }
 
     private void update(double dt) {
+        if (controller != null)
+            controller.update(dt);
+        for (TrafficLight tl : lights)
+            tl.update(dt);
         updateCars(dt);
     }
 
     /// --->
     public void addCar(String arrowKey) {
-        double speed = 100; // px/sec
+        double speed = 200; // px/sec
         String route = randomRoute();
-        Color color = Color.color(random.nextDouble(), random.nextDouble(), random.nextDouble());
+
+        Color[] colors = { Color.RED, Color.BLUE, Color.LIMEGREEN, Color.YELLOW };
+        Color color = colors[random.nextInt(colors.length)];
 
         double x = 0, y = 0;
         String moveDir = "";
@@ -119,7 +128,8 @@ public class Simulation {
         }
 
         if (!canSpawn) {
-            System.out.println("❌ Not enough space to add a new car on " + moveDir + " lane.");
+            // System.out.println("❌ Not enough space to add a new car on " + moveDir + "
+            // lane.");
             return;
         }
 
@@ -149,49 +159,29 @@ public class Simulation {
             carsToAdd.clear();
         }
 
-        for (Car car : cars) {
-            Car nearestAhead = null;
-            double minDist = Double.MAX_VALUE;
-
-            for (Car other : cars) {
-                if (car == other)
-                    continue;
-                if (!car.getDirection().equals(other.getDirection()))
-                    continue;
-
-                double dx = other.getX() - car.getX();
-                double dy = other.getY() - car.getY();
-                double dist = switch (car.getDirection()) {
-                    case "N" -> car.getY() - other.getY();
-                    case "S" -> other.getY() - car.getY();
-                    case "E" -> other.getX() - car.getX();
-                    case "W" -> car.getX() - other.getX();
-                    default -> Double.MAX_VALUE;
-                };
-
-                if (dist > 0 && dist < minDist) {
-                    minDist = dist;
-                    nearestAhead = other;
-                }
-            }
-
-            boolean canMove = nearestAhead == null || minDist > 50;
-            if (canMove)
-                car.update(dt);
-
-            if (car.isOffScreen(800))
-                carsToRemove.add(car);
-        }
-
         double safeDistance = 50;
+        carsToRemove.clear();
 
         for (Car car : cars) {
             boolean canMove = true;
 
-            for (Car other : cars) {
-                if (car == other)
-                    continue;
-                if (car.getDirection().equals(other.getDirection())) {
+            // ---- 1️⃣ Red light check ----
+            if (isApproachingIntersection(car)) {
+                TrafficLight.State lightState = getRelevantLightStateFor(car);
+                if (lightState == TrafficLight.State.RED) {
+                    canMove = false;
+                    System.out.println("car stopped because of light");
+                }
+            }
+
+            // ---- 2️⃣ Safe distance check ----
+            if (canMove) {
+                for (Car other : cars) {
+                    if (car == other)
+                        continue;
+                    if (!car.getDirection().equals(other.getDirection()))
+                        continue;
+
                     double dx = other.getX() - car.getX();
                     double dy = other.getY() - car.getY();
 
@@ -213,23 +203,69 @@ public class Simulation {
                                 canMove = false;
                             break;
                     }
+
+                    if (!canMove)
+                        break;
                 }
             }
 
+            // ---- 3️⃣ Update position if allowed ----
             if (canMove)
                 car.update(dt);
 
+            // ---- 4️⃣ Remove cars off-screen ----
             if (car.isOffScreen(800))
                 carsToRemove.add(car);
         }
 
-        // Safely remove cars
+        // ---- 5️⃣ Safe removal ----
         if (!carsToRemove.isEmpty()) {
-            for (Car c : carsToRemove) {
+            for (Car c : carsToRemove)
                 root.getChildren().remove(c.getShape());
-            }
             cars.removeAll(carsToRemove);
-            carsToRemove.clear();
+        }
+    }
+
+    private boolean isApproachingIntersection(Car car) {
+        double frontX = car.getX();
+        double frontY = car.getY();
+        String dir = car.getDirection();
+
+        switch (dir) {
+            case "S":
+                // commint from nort moving down
+                frontY = car.getY() + 40;
+                if (frontY > 350) return false;
+                return frontY > 345 && frontY < 350; // stop 50px before center
+            case "N":
+                // moving down: bottom edge is front
+                frontY = car.getY();
+                return frontY > 450 && frontY < 455;
+            case "W":
+                // moving right: right edge is front
+                frontX = car.getX() ;
+                return frontX > 450 && frontX < 455;
+            case "E":
+                // moving left: left edge is front
+                frontX = car.getX() + 40;
+                return frontX > 345 && frontX < 350;
+            default:
+                return false;
+        }
+    }
+
+    private TrafficLight.State getRelevantLightStateFor(Car car) {
+        switch (car.getDirection()) {
+            case "N":
+                return lights.get(0).getState(); // tlNorth (index 0)
+            case "S":
+                return lights.get(1).getState(); // tlSouth (index 1)
+            case "E":
+                return lights.get(2).getState(); // tlEast (index 2)
+            case "W":
+                return lights.get(3).getState(); // tlWest (index 3)
+            default:
+                return TrafficLight.State.RED;
         }
     }
 
@@ -258,19 +294,27 @@ public class Simulation {
 
         root.getChildren().addAll(nwLine1, esLine1);
 
-        // --- Traffic Lights (placeholder circles) ---
-        double lightSize = 20;
+        // --- Traffic Lights (real TrafficLight objects) ---
+        TrafficLight tlNorth = new TrafficLight(330, 330, TrafficLight.State.GREEN);
+        TrafficLight tlSouth = new TrafficLight(470, 470, TrafficLight.State.GREEN);
+        TrafficLight tlEast = new TrafficLight(470, 330, TrafficLight.State.RED);
+        TrafficLight tlWest = new TrafficLight(330, 470, TrafficLight.State.RED);
 
-        // North lane
-        Circle lightN = new Circle(330, 330, lightSize, Color.RED);
-        // South lane
-        Circle lightS = new Circle(470, 470, lightSize, Color.RED);
-        // East lane
-        Circle lightE = new Circle(470, 330, lightSize, Color.RED);
-        // West lane
-        Circle lightW = new Circle(330, 470, lightSize, Color.RED);
+        // add to local list and to root for display
+        lights.add(tlNorth);
+        lights.add(tlSouth);
+        lights.add(tlEast);
+        lights.add(tlWest);
 
-        root.getChildren().addAll(lightN, lightS, lightE, lightW);
+        // add shapes to scene graph
+        for (TrafficLight tl : lights)
+            root.getChildren().add(tl.getShape());
+
+        // create NS and EW groups and controller
+        List<TrafficLight> ns = List.of(tlNorth, tlSouth);
+        List<TrafficLight> ew = List.of(tlEast, tlWest);
+        controller = new TrafficController(ns, ew, cars);
+
     }
 
 }

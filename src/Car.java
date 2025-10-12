@@ -57,6 +57,13 @@ public class Car {
         return y;
     }
 
+    public double getWidth() {
+        return WIDTH;
+    }
+
+    public double getHeight() {
+        return HEIGHT;
+    }
     public String getDirection() {
         return direction;
     }
