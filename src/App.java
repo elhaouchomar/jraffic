@@ -15,6 +15,7 @@ public class App extends Application {
         Scene scene = new Scene(root);
         stage.setTitle("Jraffic Simulation");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
 
         scene.setOnKeyPressed(event -> {
