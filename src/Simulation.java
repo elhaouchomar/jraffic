@@ -65,9 +65,6 @@ public class Simulation {
         double speed = 200; // px/sec
         String route = randomRoute();
 
-        Color[] colors = { Color.RED, Color.BLUE, Color.LIMEGREEN, Color.YELLOW };
-        Color color = colors[random.nextInt(colors.length)];
-
         double x = 0, y = 0;
         String moveDir = "";
 
@@ -134,7 +131,8 @@ public class Simulation {
         }
 
         // --- Safe to add the car ---
-        Car car = new Car(x, y, moveDir, color, speed, route);
+
+        Car car = new Car(x, y, moveDir, speed, route);
         carsToAdd.add(car); // queue it instead of adding immediately
     }
 
@@ -235,7 +233,8 @@ public class Simulation {
             case "S":
                 // commint from nort moving down
                 frontY = car.getY() + 40;
-                if (frontY > 350) return false;
+                if (frontY > 350)
+                    return false;
                 return frontY > 345 && frontY < 350; // stop 50px before center
             case "N":
                 // moving down: bottom edge is front
@@ -243,7 +242,7 @@ public class Simulation {
                 return frontY > 450 && frontY < 455;
             case "W":
                 // moving right: right edge is front
-                frontX = car.getX() ;
+                frontX = car.getX();
                 return frontX > 450 && frontX < 455;
             case "E":
                 // moving left: left edge is front

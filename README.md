@@ -86,22 +86,22 @@ Do you want me to do that?
 
 00:00
 ---
-14:00
+01:23 😴 💤
 ## 🕓 **PHASE 4 — Traffic Light System (3h)**
 
-* [ ] Implement `TrafficLight`:
+* [X] Implement `TrafficLight`:
 
-  * [ ] Fields: color (enum RED/GREEN), position, timer.
-  * [ ] Methods: `switchLight()`, `update()`.
-* [ ] Implement `TrafficController`:
+  * [X] Fields: color (enum RED/GREEN), position, timer.
+  * [X] Methods: `switchLight()`, `update()`.
+* [X] Implement `TrafficController`:
 
-  * [ ] Control all lights.
-  * [ ] Define simple pattern: N–S green, then E–W green.
+  * [X] Control all lights.
+  * [X] Define simple pattern: N–S green, then E–W green.
   * [ ] Optional: adaptive timing based on congestion.
 * [ ] In car logic:
 
-  * [ ] Stop at red near intersection.
-  * [ ] Move on green.
+  * [X] Stop at red near intersection.
+  * [X] Move on green.
 
 ✅ **Goal:** Lights switch automatically, cars obey signals.
 
