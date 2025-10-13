@@ -47,9 +47,6 @@ public class Simulation {
         if (controller != null) {
             controller.update(dt);
         }
-        // for (TrafficLight tl : lights) {
-        //     tl.update(dt);
-        // }
         updateCars(dt);
     }
 

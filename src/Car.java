@@ -13,6 +13,8 @@ public class Car {
     private static final double HEIGHT = 40;
 
     private enum TurnPhase {
+        // Move straight to the center (PHASE_1).
+        // Change direction and move straight out (PHASE_2).
         NONE, PHASE_1, PHASE_2
     }
 
@@ -103,14 +105,6 @@ public class Car {
         }
     }
 
-    public boolean isInIntersection() {
-        // Check if the car is anywhere within the main intersection area
-        if (fromDirection == "W" && route == "RIGHT") {
-            return x > 400 && x < 405 && y > 350 && y < 450;
-        }
-        return x > 350 && x < 450 && y > 350 && y < 450;
-    }
-
     private void performRightTurn(double dt) {
         if (turnPhase == TurnPhase.PHASE_1) {
             boolean targetReached = false;
@@ -155,6 +149,14 @@ public class Car {
         } else if (turnPhase == TurnPhase.PHASE_2) {
             moveStraight(dt);
         }
+    }
+
+    public boolean isInIntersection() {
+        // Check if the car is anywhere within the main intersection area
+        if (fromDirection == "W" && route == "RIGHT") {
+            return x > 400 && x < 405 && y > 350 && y < 450;
+        }
+        return x > 350 && x < 450 && y > 350 && y < 450;
     }
 
     private void moveStraight(double dt) {
