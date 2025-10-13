@@ -137,7 +137,7 @@ East ---------------             --------------- West
 
 ## 🧑‍💻 Authors
 
-Project by **zabdelal**
+Project by **obenali** **oelhaouc** **zabdelal** 
 Zone01 Oujda — *Traffic Control Simulation Project*
 
 ---
