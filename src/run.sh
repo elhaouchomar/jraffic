@@ -9,5 +9,8 @@ mkdir -p build
 # Compile all Java files
 javac --module-path "$JFX_LIB" --add-modules javafx.controls,javafx.fxml *.java -d build
 
-# Run the application
-java --module-path "$JFX_LIB" --add-modules javafx.controls,javafx.fxml -cp build App
+# Run the application with GTK/dconf warnings suppressed
+G_MESSAGES_DEBUG=none \
+GTK_DEBUG=none \
+DCONF_PROFILE=/dev/null \
+java --module-path "$JFX_LIB" --add-modules javafx.controls,javafx.fxml -cp build App 2>/dev/null

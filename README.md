@@ -1,150 +1,158 @@
-## **Running the Project**
+# 🚦 jraffic
 
-1. **Download JavaFX SDK (version 17)**
-   Make sure to download **exactly version 17**:
-   [https://gluonhq.com/products/javafx/](https://gluonhq.com/products/javafx/)
-
-2. **Unzip the SDK**
-   Extract the downloaded archive into your home directory (or any preferred location). For example:
-
-   ```bash
-   ~/javafx-sdk-17
-   ```
-
-3. **Run the project using the provided script**
-   The `run.sh` script handles compilation and JavaFX module paths automatically:
-
-   ```bash
-   ./run.sh
-   ```
-
-> ⚠️ Important: The project has been tested with **JavaFX 17** only. Using a different version may cause compilation or runtime errors.
-
-
-
-
-# ✅ **Jraffic Project — 16-Hour TODO Plan**
+A simple **traffic simulation** built in **Java** using **JavaFX**.
+This project simulates a road intersection with vehicles, traffic lights, and adaptive control logic to prevent congestion.
 
 ---
-16:00
-## 🕐 **PHASE 1 — Setup & Structure (2h)**
 
-* [X] Create a new **JavaFX project**.
-* [X] Implement main class `App` extending `Application`.
-* [X] Create scene (≈800×800) and add a `Pane` or `Group` for drawing.
-* [X] Create core classes:
+## 🧭 Overview
 
-  * [X] `Car`
-  * [X] `TrafficLight`
-  * [X] `Road`
-  * [X] `Intersection`
-  * [X] `TrafficController`
-  * [X] `Simulation` (or main update loop)
-* [X] Add constants file (`Constants.java`) for sizes, speeds, timing, etc.
-* [X] Create main animation loop using `Timeline` or `AnimationTimer`.
-
-✅ **Goal:** Empty window + class skeletons + update loop running.
-17:30 ?? 18:23
----
-18:00
-## 🕑 **PHASE 2 — Draw Environment (2h)**
-
-* [X] Draw horizontal and vertical roads (`Rectangle`).
-* [X] Draw the intersection center.
-* [X] Add traffic light placeholders (colored rectangles or circles).
-* [X] Position lights at all entry lanes (N, S, E, W).
-
-✅ **Goal:** Crossroad drawn with visible traffic lights.
----
-
-20:00
-## 🕒 **PHASE 3 — Vehicles & Movement (4h)**
-* [X] Implement `Car` class:
-
-  * [X] Properties: position, direction, route, color, speed.
-  * [X] Method `update()` for movement.
-* [X] Handle **key input** (`KeyEvent`):
-
-  * [X] ↑ → car from South → North.
-  * [X] ↓ → car from North → South.
-  * [X] → → car from West → East.
-  * [X] ← → car from East → West.
-  * [X] `r` → random direction.
-* [X] Add random route (LEFT / RIGHT / STRAIGHT).
-* [X] Add cars to simulation list and update in loop.
-* [X] Implement **safe distance** (cars stop before next car).
-* [X] Remove cars exiting the screen.
-
-✅ **Goal:** Cars spawn, move correctly, and respect spacing.
-
-00:00
----
-01:23 😴 💤
-## 🕓 **PHASE 4 — Traffic Light System (3h)**
-
-* [X] Implement `TrafficLight`:
-
-  * [X] Fields: color (enum RED/GREEN), position, timer.
-  * [X] Methods: `switchLight()`, `update()`.
-* [X] Implement `TrafficController`:
-
-  * [X] Control all lights.
-  * [X] Define simple pattern: N–S green, then E–W green.
-  * [ ] Optional: adaptive timing based on congestion.
-* [ ] In car logic:
-
-  * [X] Stop at red near intersection.
-  * [X] Move on green.
-
-✅ **Goal:** Lights switch automatically, cars obey signals.
+The goal of **jraffic** is to model traffic flow through an intersection and dynamically control traffic lights to minimize congestion.
+It visualizes cars moving through two intersecting roads, obeying traffic lights and basic traffic rules.
 
 ---
-17:00
-## 🕔 **PHASE 5 — Dynamic Congestion Handling (2h)**
 
-* [ ] Each lane tracks number of cars.
-* [ ] Compute lane capacity:
-  `capacity = floor(lane_length / (vehicle_length + safety_gap))`
-* [ ] If lane is full:
+## 🧩 Features
 
-  * [ ] Extend green time for that lane.
-  * [ ] Delay cycle for less busy lanes.
+* Two intersecting roads (North–South and East–West)
+* Each direction supports:
 
-✅ **Goal:** Traffic adapts to congestion.
+  * Straight movement
+  * Left turn
+  * Right turn
+* Dynamic traffic light control:
 
----
-19:00
-## 🕕 **PHASE 6 — Controls, Colors & Polish (2h)**
+  * Green/red signals only
+  * Adapts to lane congestion using:
 
-* [ ] Prevent spamming car creation (cooldown per lane).
-* [ ] Assign car colors per route:
+    ```
+    capacity = floor(lane_length / (vehicle_length + safety_gap))
+    ```
+* Vehicles:
 
-  * [ ] Left = Blue
-  * [ ] Right = Yellow
-  * [ ] Straight = Red
-* [ ] Smooth animation (use transitions or interpolation).
-* [ ] Add small on-screen labels for directions or queue sizes.
-* [ ] Add key `Esc` to exit simulation cleanly.
-
-✅ **Goal:** Functional, user-friendly simulation.
+  * Fixed speed per car
+  * Maintain safe following distance
+  * Stop at red lights
+  * Colored by route type (right, left, straight)
+* Keyboard-controlled car spawning with safe spacing
 
 ---
-21:00
-## 🕖 **PHASE 7 — Testing & Cleanup (1h)**
 
-* [ ] Test each direction and route.
-* [ ] Confirm cars stop/go correctly at lights.
-* [ ] Confirm congestion logic behaves.
-* [ ] Remove debug prints and unused code.
-* [ ] Add clear comments to major classes and methods.
+## 🎮 Controls
 
-✅ **Goal:** Stable, readable, ready-to-submit project.
-22:00
+| Key | Action                                         |
+| --- | ---------------------------------------------- |
+| ↑   | Spawn a vehicle moving north → south           |
+| ↓   | Spawn a vehicle moving south → north           |
+| →   | Spawn a vehicle moving west → east             |
+| ←   | Spawn a vehicle moving east → west             |
+| r   | Spawn a random vehicle from a random direction |
+| Esc | Exit the simulation                            |
+
+> Vehicles spawn only if there is enough safe distance from existing ones.
+
+---
+
+## 🧠 Simulation Logic
+
+* Traffic lights are placed at each intersection entry.
+* Each vehicle follows a **fixed route** and color.
+* The **TrafficController** manages light timing based on congestion.
+* **Simulation** handles vehicle updates and rendering.
+* **Car** class defines vehicle movement and rules.
+* **TrafficLight** handles light state transitions.
+* **App** starts the JavaFX interface.
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── App.java                # Entry point (JavaFX Application)
+├── Car.java                # Vehicle class and movement logic
+├── Simulation.java         # Main simulation loop and rendering
+├── TrafficController.java  # Traffic light timing and logic
+├── TrafficLight.java       # Traffic light states
+├── build/                  # Compiled .class files
+└── run.sh                  # Script to compile and run with JavaFX
+```
+
+---
+
+## ⚙️ Running the Project
+
+### 1. Install JavaFX 17
+
+Download **JavaFX SDK 17** from:
+[https://gluonhq.com/products/javafx/](https://gluonhq.com/products/javafx/)
+
+### 2. Extract the SDK
+
+Unzip it somewhere convenient, for example:
+
+```bash
+~/javafx-sdk-17
+```
+
+### 3. Run the Simulation
+
+Use the provided script:
+
+```bash
+./run.sh
+```
+
+The script automatically handles compilation and JavaFX module paths.
+
+> ⚠️ Tested only with **JavaFX 17**.
+> Other versions may cause errors or crashes.
+
+---
+
+## 🧮 Example Visualization
+
+```
+                        North
+                    |  ↓  |  ↑  |
+                    |  ↓  |  ↑  |
+     _______________|     |     |_______________
+     ← ←                                     ← ←
+East ---------------             --------------- West
+     → →                                     → →
+     _______________             _______________
+                    |  ↓  |  ↑  |
+                    |  ↓  |  ↑  |
+                        South
+```
+
+---
+
+## 🧱 Requirements
+
+* **Java 17+**
+* **JavaFX 17 SDK**
+
+---
+
+## 🧑‍💻 Authors
+
+Project by **zabdelal**
+Zone01 Oujda — *Traffic Control Simulation Project*
+
+---
+
+## 📝 License
+
+This project is for educational purposes under the Zone01 curriculum.
+You are free to modify and extend it as part of your learning.
+
+--- 
+
+## 💬 Feedback & Contributions
+
+If you find a bug or have an idea to improve **jraffic**, feel free to open an issue or suggest changes.
+All constructive feedback is welcome — this project is meant to evolve and get better over time.
 
 
 
-## 🕖 ** Bug Fixing
-* [ ] 
-* [ ] improve light algorithm to prevent jam (other improvements)
-* [ ] green car comming from east has weird behaviour in intersection
-* [ ] improve safty distance : optional
